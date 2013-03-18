@@ -30,9 +30,9 @@ class OpenCloudServer:
 		self.server_name = new_server.name
 		self.root_pass   = new_server.adminPass
 		self.server_id   = new_server.id
-		print " !! Building !!"
+		print "Building " + str(self.server_name)
 		pyrax.utils.wait_until(new_server, "status", ['ACTIVE', 'ERROR'], interval=20, 
-					attempts=60, verbose=False)
+					attempts=60, verbose=True)
 		self.set_current_server_networks()
 	"""
 	Returns public IP address of server

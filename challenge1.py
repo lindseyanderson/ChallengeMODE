@@ -14,21 +14,17 @@ if __name__ == '__main__':
         print "This is going to happen 3 times, so sit back and relax.  The build process takes upto 400 seconds per server.  Check out /r/cigars in the meantime."
         server = ['server1','server2','server3']
         for i in range(3):
+	        server_name = str(server[i])
                 server[i] = cloudservers.OpenCloudServer()
-                server_name = raw_input("Server Name: ")
-                try:
-			print "For server size, 512, 1024, 2048, 4096, 8192, 15872, 30720 are valid"
-                        server_size = int(raw_input("Server Size: "))
-                except ValueError:
-                        print "Non-integer value entered.  Please try a number."
-                        sys.exit(1)
-                server_os        = raw_input("Server OS  : ")
+		server_os   = "CentOS 6.3"
+		server_size = 512	
                 server[i].create_server(server_name, server_os, server_size)
 
         os.system("clear")
         for i in range(3):
                 print "|"+"-"*68+"|"
                 print "| {0:<32} | {1:<31} |".format(str("Server Name: "), str(server[i].get_server_name()))
+                print "| {0:<32} | {1:<31} |".format(str("Server Size: "), str(server[i].get_server_size()))
                 print "|"+"-"*68+"|"
                 print "| {0:<32} | {1:<31} |".format(str("Server Public IP: "), str(server[i].get_server_ip_public()))
                 print "| {0:<32} | {1:<31} |".format(str("Server Private IP: "), str(server[i].get_server_ip_private()))
