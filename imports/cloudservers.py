@@ -86,3 +86,28 @@ class OpenCloudServer:
 	Returns root password	
 	"""
 	def get_server_admin_pass(self): return self.root_pass
+
+	"""
+	Create an image of specified Cloud Server
+	"""
+	def create_image(self, imageName, serverName):
+		servers_list = self.cs.servers.list()
+		for i in servers_list:
+			if i.name == serverName:
+				image_ID = self.cs.servers.create_image(i.id, imageName)
+				return image_ID
+
+	"""
+	Pretty formatting
+	"""
+	def get_server_formatted_details(self):
+		print "|"+"-"*68+"|"
+		print "| {0:<32} | {1:<31} |".format(str("Server Name: "), str(self.get_server_name()))
+		print "| {0:<32} | {1:<29}MB |".format(str("Server Size: "), str(self.get_server_size()))
+		print "|"+"-"*68+"|"
+		print "| {0:<32} | {1:<31} |".format(str("Server Public IP: "), str(self.get_server_ip_public()))
+		print "| {0:<32} | {1:<31} |".format(str("Server Private IP: "), str(self.get_server_ip_private()))
+		print "| {0:<32} | {1:<31} |".format(str("Server Username: "), str("root"))
+		print "| {0:<32} | {1:<31} |".format(str("Server Password: "), str(self.get_server_admin_pass()))
+		print "|"+"-"*68+"|"
+		
