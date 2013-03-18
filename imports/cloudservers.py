@@ -2,7 +2,7 @@
 """
 Cloud Server
 
-Making this threaded would be a lot smarter.
+Lindsey Anderson
 """
 
 import pyrax
