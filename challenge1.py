@@ -17,6 +17,7 @@ if __name__ == '__main__':
                 server[i] = cloudservers.OpenCloudServer()
                 server_name = raw_input("Server Name: ")
                 try:
+			print "For server size, 512, 1024, 2048, 4096, 8192, 15872, 30720 are valid"
                         server_size = int(raw_input("Server Size: "))
                 except ValueError:
                         print "Non-integer value entered.  Please try a number."
