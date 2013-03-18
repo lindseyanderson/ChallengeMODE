@@ -24,6 +24,4 @@ def verify_input():
     sys.exit('Usage: %s <username> <apikey>' % sys.argv[0])
   else:
     auth_test = pyrax_auth(sys.argv[1], sys.argv[2])
-  if ( auth_test == True ):
-    print "Authentication Succesful %s!" % sys.argv[1]
 

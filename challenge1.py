@@ -1,11 +1,13 @@
 #!/usr/bin/python
 """
 Cloud Server
+
+Making this threaded would be a lot smarter.
 """
 
 import pyrax
 import re
-import sys
+import sys, os
 from imports import auth
 
 class OpenCloudServer:
@@ -29,8 +31,9 @@ class OpenCloudServer:
 		self.server_name = new_server.name
 		self.root_pass   = new_server.adminPass
 		self.server_id   = new_server.id
+		print " !! Building !!"
 		pyrax.utils.wait_until(new_server, "status", ['ACTIVE', 'ERROR'], interval=20, 
-					attempts=60, verbose=True)
+					attempts=60, verbose=False)
 		self.set_current_server_networks()
 	"""
 	Returns public IP address of server
@@ -59,7 +62,7 @@ class OpenCloudServer:
 		dfw_servers = cs_dfw.servers.list()
 		ord_servers = cs_ord.servers.list()
 		self.servers = dfw_servers + ord_servers
-		for server in servers:
+		for server in self.servers:
 			if server.name == self.server_name:
 				self.network = server.networks	
 	"""
@@ -80,22 +83,33 @@ class OpenCloudServer:
 	Returns server os
 	"""
 	def get_server_os(self): return self.server_os
+	""" 
+	Returns root password	
+	"""
+	def get_server_admin_pass(self): return self.root_pass
 
 if __name__ == '__main__':
 	auth.verify_input()
-	server1 = OpenCloudServer()
-	server_name = raw_input("Server Name: ")
-	try:
-		server_size = int(raw_input("Server Size: "))
-	except ValueError:
-		print "Non-integer value entered.  Please try a number."
-		sys.exit(1)
-	server_os	 = raw_input("Server OS  : ")
-	server1.create_server(server_name, server_os, server_size)	
 	
-	print "Server Name: " + server1.get_server_name()
-	print "Server Size: " + str(server1.get_server_size())
-	print "Server OS:   " + str(server1.get_server_os())
-	print "Server Public IP: " + str(server1.get_server_ip_public())
-	print "Server Private IP: " + str(server1.get_server_ip_private())
-
+	print "This is going to happen 3 times, so sit back and relax.  The build process takes upto 400 seconds per server.  Check out /r/cigars in the meantime."
+	server = ['server1','server2','server3']
+	for i in range(3):
+		server[i] = OpenCloudServer()
+		server_name = raw_input("Server Name: ")
+		try:
+			server_size = int(raw_input("Server Size: "))
+		except ValueError:
+			print "Non-integer value entered.  Please try a number."
+			sys.exit(1)
+		server_os	 = raw_input("Server OS  : ")
+		server[i].create_server(server_name, server_os, server_size)	
+		
+	os.system("clear")
+	for i in range(3):
+		print "|"+"-"*68+"|"
+		print "| {0:<32} | {1:<31} |".format(str("Server Name: "), str(server[i].get_server_name()))
+		print "|"+"-"*68+"|"
+		print "| {0:<32} | {1:<31} |".format(str("Server Public IP: "), str(server[i].get_server_ip_public()))
+		print "| {0:<32} | {1:<31} |".format(str("Server Private IP: "), str(server[i].get_server_ip_private()))
+		print "| {0:<32} | {1:<31} |".format(str("Server Root Pass: "), str(server[i].get_server_admin_pass()))
+		print "|"+"-"*68+"|"
