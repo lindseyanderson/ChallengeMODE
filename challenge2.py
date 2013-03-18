@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
   # Setup some static stuffs
   current_server_name = "server1"
-  image_name          = server_name + "_image"
+  image_name          = current_server_name + "_image"
   new_server_name     = "server1_clone"
   new_server_size     = 512
   
