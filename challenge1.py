@@ -1,7 +1,12 @@
 #!/usr/bin/python
 """
-Challenge 1
-Lindsey Anderson
+Challenge 1:
+Write a script that builds three 512 MB Cloud Servers that following a similar naming 
+convention. (ie., web1, web2, web3) and returns the IP and login credentials for each 
+server. Use any image you want.
+
+@author: Lindsey Anderson
+@date  : March 17, 2013
 """
 import os
 import sys
@@ -13,7 +18,7 @@ if __name__ == '__main__':
 	# Everyone loves to auth!  
         auth.verify_input()
 
-        print "This is going to happen 3 times, so sit back and relax.  The build process takes upto 400 seconds per server."
+        print "This is going to happen 3 times, so sit back and relax.  The build process can take upto 400 seconds per server."
 	print "Check out /r/cigars in the meantime."
 	
 	#Server Names, update them here or don't hard code them... your choice
@@ -38,5 +43,6 @@ if __name__ == '__main__':
                 print "|"+"-"*68+"|"
                 print "| {0:<32} | {1:<31} |".format(str("Server Public IP: "), str(server[i].get_server_ip_public()))
                 print "| {0:<32} | {1:<31} |".format(str("Server Private IP: "), str(server[i].get_server_ip_private()))
-                print "| {0:<32} | {1:<31} |".format(str("Server Root Pass: "), str(server[i].get_server_admin_pass()))
+                print "| {0:<32} | {1:<31} |".format(str("Server Username: "), str("root"))
+                print "| {0:<32} | {1:<31} |".format(str("Server Password: "), str(server[i].get_server_admin_pass()))
                 print "|"+"-"*68+"|"
