@@ -10,7 +10,8 @@ that can connect to it.
 """
 
 import pyrax
-
+import pyrax.exceptions as ex
+import sys
 from imports import auth
 
 if __name__ == '__main__':
@@ -25,14 +26,16 @@ if __name__ == '__main__':
 
 	# Preset possible flavors to users
 	flavors = cdb.list_flavors()
+	count = 0 
 	for flavor in flavors:
-		print "Flavor name:",flavor.name
-		print "Flavor memory:",flavor.ram
+		
+		print "{0}) Flavor name: {1} ".format(count, flavor.name)
+		count = count +1
 
 	cloud_database_flavor = raw_input("Please enter a memory size: ")
 	try:
-		chosen_flavor = flavors[cloud_database_flavor]
-	except IndexError:
+		chosen_flavor = flavors[int(cloud_database_flavor)]
+	except ex.IndexError:
 		print "Invalid flavor choice."
 		sys.exit(1)
 	cloud_database_size   = raw_input("Please Enter disk size in GB: ")	
@@ -40,18 +43,28 @@ if __name__ == '__main__':
 	# Check and see if our database instance exists
 	try:
 		instance = [ iname for iname in cdb.list()
-				if dbname.name == cloud_database_instance ][0]
+				if iname.name == cloud_database_instance ][0]
 	# If not, create it!
 	except:
 		try: 
 			instance = cdb.create(cloud_database_instance, 
-				flavor=cloud_database_flavor, cloud_database_size )
+				flavor=chosen_flavor, volume=cloud_database_size )
 			print "Instance {0} created".format(str(cloud_database_instance))
 		except:
 			print "Instance could not be created."
 
+	# Wait for our instance to finish building
+	status_check = [ inst for inst in cdb.list()
+			if inst.name == cloud_database_instance ][0]
+	pyrax.utils.wait_until(status_check, "status", ['ACTIVE','ERROR'], 
+			interval=20, attempts=60,verbose=True)
+	
 	# Create the database:
 	database = instance.create_database(cloud_database_name)
-
-
+	print "Database created:", cloud_database_name
+	# Create the user
+	user = instance.create_user(cloud_database_user, cloud_database_pass, 
+			database_names=cloud_database_name)
+	print "User added:", cloud_database_user
+	
 
