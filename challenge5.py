@@ -20,8 +20,6 @@ if __name__ == '__main__':
 	
 	cloud_database_instance   = raw_input("Please enter an instance name: ")
 	cloud_database_name       = raw_input("Please enter a database name: ")
-	cloud_database_user       = raw_input("Please enter a username: ")
-	cloud_database_pass       = raw_input("Please enter a password: ")
 	print "Flavors are available in the following: "
 
 	# Preset possible flavors to users
@@ -67,6 +65,8 @@ if __name__ == '__main__':
 		print "Database cannot be created:",e
 	# Create the user
 	try:
+		cloud_database_user       = raw_input("Please enter a username: ")
+		cloud_database_pass       = raw_input("Please enter a password: ")
 		user = instance.create_user(cloud_database_user, cloud_database_pass, 
 			database_names=cloud_database_name)
 		print "User added:", cloud_database_user
