@@ -26,16 +26,16 @@ if __name__ == '__main__':
 	flavors = cdb.list_flavors()
 	count = 0 
 	for flavor in flavors:
-		
 		print "{0}) Flavor name: {1} ".format(count, flavor.name)
 		count = count +1
-
 	cloud_database_flavor = raw_input("Please enter a memory size: ")
 	try:
 		chosen_flavor = flavors[int(cloud_database_flavor)]
 	except ex.IndexError:
 		print "Invalid flavor choice."
 		sys.exit(1)
+
+	# get disk space
 	cloud_database_size   = raw_input("Please Enter disk size in GB: ")	
 
 	# Check and see if our database instance exists
@@ -50,6 +50,7 @@ if __name__ == '__main__':
 			print "Instance {0} created".format(str(cloud_database_instance))
 		except:
 			print "Instance could not be created."
+			sys.exit(1)
 
 	# Wait for our instance to finish building
 	status_check = [ inst for inst in cdb.list()
