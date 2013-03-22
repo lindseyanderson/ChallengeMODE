@@ -46,4 +46,4 @@ if __name__ == "__main__":
 		object = cf.upload_file(cont.name, local_file)
 		print "Upload completed."
 	except exc.UploadFailed:
-		print "!! An error occured in the upload process, 
+		print "!! An error occured in the upload process !!" 
