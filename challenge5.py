@@ -43,7 +43,7 @@ if __name__ == '__main__':
 	# Check and see if our database instance exists
 	try:
 		instance = [ iname for iname in cdb.list()
-				if iname.name == cloud_database_instance ][0]
+				if iname.name == cloud_database_instance][0]
 	# If not, create it!
 	except:
 		try: 
@@ -60,11 +60,17 @@ if __name__ == '__main__':
 			interval=20, attempts=60,verbose=True)
 	
 	# Create the database:
-	database = instance.create_database(cloud_database_name)
-	print "Database created:", cloud_database_name
+	try:
+		database = instance.create_database(cloud_database_name)
+		print "Database created:", cloud_database_name
+	except ex.BadRequest as e :
+		print "Database cannot be created:",e
 	# Create the user
-	user = instance.create_user(cloud_database_user, cloud_database_pass, 
+	try:
+		user = instance.create_user(cloud_database_user, cloud_database_pass, 
 			database_names=cloud_database_name)
-	print "User added:", cloud_database_user
-	
+		print "User added:", cloud_database_user
+	except ex.BadRequest as e :
+		print "User cannot be added:",e	
+
 
