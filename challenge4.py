@@ -9,12 +9,15 @@ and IP address as arguments
 """
 
 import pyrax
+import sys
 import pyrax.exceptions as exc 
 import pyrax.utils as utils
 
 from imports import auth
 
 if __name__ == '__main__':
+
+	auth.verify_input()
 
 	dns = pyrax.cloud_dns
 
@@ -24,13 +27,14 @@ if __name__ == '__main__':
 
 	# create domain
 	try: 
-		domain = dns.list(name=fdqn)
+		domain = dns.find(name=fqdn)
 	except exc.NotFound:
 		try:
 			domain = dns.create(name=fqdn, emailAddress="ipadmin@stabletransit.net",
 				ttl=300, comment=fqdn)
 		except exc.DomainCreationFailed as ex:
-			print "Domain could not be created:", ex
+			print "!! Domain could not be created:", ex
+			sys.exit(1)
 		print "Domain created: {0}.".format(str(domain))
 	
 	# create the dict for the record
