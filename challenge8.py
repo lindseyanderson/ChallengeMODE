@@ -48,24 +48,28 @@ if __name__ == '__main__':
 
 	# create a CNAME record to point to the CDN URL of the container
 	try: 
-		domain = dns.find(name=fqdn)
-	except exc.NotFound:
+		domain = cdns.find(name=fqdn)
+	except ex.NotFound:
 		try:
-			domain = dns.create(name=fqdn, emailAddress="ipadmin@stabletransit.net",
+			domain = cdns.create(name=fqdn, emailAddress="ipadmin@stabletransit.net",
 				ttl=300, comment=fqdn)
-		except exc.DomainCreationFailed as ex:
+		except ex.DomainCreationFailed as ex:
 			print "!! Domain could not be created:", ex
 			sys.exit(1)
 		print "Domain created: {0}.".format(str(domain))
-	fqdn = subdomain.join('.' + fqdn)
+	fqdn = subdomain + '.' + fqdn
 	cname_record = {"type": "CNAME",
 			"name": fqdn,
 			"data": container.cdn_uri,
 			"ttl" : 300}
 
-	domain.add_records(cname_record)
+	try:
+		domain.add_records(cname_record)
+		print "CNAME Added:", fqdn 
+		# return our new CDN URL
+		print "CDN URI:", container.cdn_uri
+		print "CDN SSL URI:", container.cdn_ssl_uri
+		print "CDN Streaming URI:", container.cdn_streaming_uri
+	except ex.DomainRecordAdditionFailed:
+		print "CNAME record already exists."
 
-	# return our new CDN URL
-	print "CDN URI:", container.cdn_uri
-	print "CDN SSL URI:", container.cdn_ssl_uri
-	print "CDN Streaming URI:", container.cdn_streaming_uri
