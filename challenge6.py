@@ -16,7 +16,7 @@ if __name__ == '__main__':
 	auth.verify_input()
 
 	cf = pyrax.cloudfiles
-	
+
 	container_name = "cdn_test_container"
 	try:
 		container = cf.get_container(container_name)
@@ -24,10 +24,10 @@ if __name__ == '__main__':
 	except ex.NoSuchContainer:
 		container = cf.create_container(container_name)
 		print "Container {0} created.".format(str(container.name))	
-	
+
 	# enable the CDN on your container
 	container.make_public(ttl=300)
-	
+
 
 	# return our new CDN URL
 	print "CDN URI:", container.cdn_uri
