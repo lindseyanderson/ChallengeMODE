@@ -42,10 +42,3 @@ if __name__ == '__main__':
 	loadbalancer 	= cloud_lb.create(lb_name, port=80, protocol="HTTP",
 				nodes=[lb_node1, lb_node2], virtual_ips=[lb_vip])
 	print "Load Balancer {0} created.".format(str(loadbalancer.name))
-
-	# Wait for the Load Balancer to be active
-	added_node = [ lbnode for lbnode in loadbalancer.nodes
-				if lbnode.address == new_node.address][0]
-	pyrax.utils.wait_until( loadbalancer, "status", "ACTIVE",
-				interval=5, attempts=30, verbose=True)
-	
