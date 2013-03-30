@@ -13,13 +13,18 @@ class OpenCloudServer:
 	def __init__(self):
 		self.cs	 = pyrax.cloudservers
 
-	def create_server(self, server_name, server_os, server_size, image_id=None):
+	def create_server(self, server_name, server_os, server_size, image_id=None, size_id=None):
 		self.server_name = server_name
 		self.server_os   = server_os
-		self.server_size = int(server_size)
+		self.server_size = server_size
 		self.image_id    = image_id
-		local_memory = [ memory for memory in self.cs.flavors.list()
+		self.size_id     = size_id
+		if not size_id:
+			local_memory = [ memory for memory in self.cs.flavors.list()
 					if memory.ram == self.server_size][0]
+		else:
+			local_memory = [ memory for memory in self.cs.flavors.list()
+					if self.size_id in memory.id][0]
 		if not image_id:
 			local_os     = [ image  for image  in self.cs.images.list()
 					if self.server_os in image.name][0]
