@@ -86,11 +86,11 @@ if __name__ == '__main__':
 	lb_vip = loadbalancer.virtual_ips[0].address
 	print "Load balancer IP",lb_vip 
 	# Add a health monitor to the load balancer
-	status_monitor = loadbalancer.add_health_monitor(type="CONNECT", delay=5, timeout=30)
+	loadbalancer.add_health_monitor(type="CONNECT", delay=5, timeout=30)
 	print "Load balancer health monitor added."
 	# Add a new error page
 	# we have to sleep first, otherwise it will be immutable
-	pyrax.utils.wait_until(status_monitor, "status", ['ACTIVE', 'ERROR'], interval=20,
+	pyrax.utils.wait_until(loadbalancer, "status", ['ACTIVE', 'ERROR'], interval=20,
 					attempts=60, verbose=True)
 	loadbalancer.set_error_page(error_page)
 	print "Load balancer error page added."
