@@ -98,7 +98,7 @@ if __name__ == '__main__':
 
 	# Create a FQDN to point to the VIP of the load balancer
         try:
-                domain = dns.find(name=fqdn_input)
+                domain = cdns.find(name=fqdn_input)
         except exc.NotFound:
                 try:
                         domain = cdns.create(name=fqdn_input, emailAddress="ipadmin@stabletransit.net",
