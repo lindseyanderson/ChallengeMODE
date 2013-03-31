@@ -61,19 +61,27 @@ if __name__ == '__main__':
 	"""
 	error_object = cf.store_object(container, "error.html", error_page)
 	print "Error page has been added to", container.name, "for backup."
-	print "Download here:", container.cdn_uri
+	print "Download here:", container.cdn_uri + "/error.html"
 	
 	# Create a Load Balancer
 	lb_name  = "Challenge10-LB"
+	lb_nodes = []
 	print "Creating", lb_name
 	lb_vip	 = clb.VirtualIP(type="PUBLIC")
-	lb_node0 = clb.Node(address=server[0].networks['private'],
-			port=80, condition="ENABLED")
-	lb_node1 = clb.Node(address=server[1].networks['private'],
-			port=80, condition="ENABLED")
+	# we have to do some magic to repopulate the server network list 
+	# doesn't seem to be there when the build is set to active
+	cs_dfw = pyrax.connect_to_cloudservers(region="ORD")
+	cs_ord = pyrax.connect_to_cloudservers(region="DFW")
+	new_server_list = cs_dfw.servers.list() + cs_ord.servers.list()
 
-	loadbalancer = create(lb_name, port=80, protocol="HTTP",
-				nodes=[lb_node0, lb_node1], virtual_ips=[lb_vip])
+	for count,server in enumerate(server_list):
+		for nserver in new_server_list:
+			if server.id == nserver.id:
+				private_ip = nserver.networks['private'][0]
+		lb_nodes.append(clb.Node(address=private_ip, port=80, condition="ENABLED"))
+
+	loadbalancer = clb.create(lb_name, port=80, protocol="HTTP",
+				nodes=[lb_nodes[0], lb_nodes[1]], virtual_ips=[lb_vip])
 	pyrax.utils.wait_until(loadbalancer, "status", ['ACTIVE', 'ERROR'], interval=20,
 					attempts=60, verbose=True)
 	print "Load balancer", loadbalancer.name, "created."
@@ -83,7 +91,7 @@ if __name__ == '__main__':
 	loadbalancer.add_health_monitor(type="CONNECT", delay=5, timeout=30)
 	print "Load balancer health monitor added."
 	# Adding a new error page
-	loadbalancer.errorpage().add(error_page)
+	loadbalancer.set_error_page(error_page)
 	print "Load balancer error page added."
 
 
