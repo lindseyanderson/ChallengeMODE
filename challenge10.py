@@ -9,7 +9,7 @@ Challenge 10
 - Write the error page html to a file in cloud files for backup.
 
 """
-
+import time
 import pyrax
 import pyrax.exceptions as exc
 from imports import auth
@@ -51,8 +51,7 @@ if __name__ == '__main__':
 	container.make_public(ttl=1200)	
 
 	# Upload custom error page:
-	error_page = """
-	<html>
+	error_page = """<html>
 	<head><title>Challenge 10 - Custom Error</title></head>
 	<body>
 		Custom Error Page Here.
@@ -69,7 +68,6 @@ if __name__ == '__main__':
 	print "Creating", lb_name
 	lb_vip	 = clb.VirtualIP(type="PUBLIC")
 	# we have to do some magic to repopulate the server network list 
-	# doesn't seem to be there when the build is set to active
 	cs_dfw = pyrax.connect_to_cloudservers(region="ORD")
 	cs_ord = pyrax.connect_to_cloudservers(region="DFW")
 	new_server_list = cs_dfw.servers.list() + cs_ord.servers.list()
@@ -88,9 +86,12 @@ if __name__ == '__main__':
 	lb_vip = loadbalancer.virtual_ips[0].address
 	print "Load balancer IP",lb_vip 
 	# Add a health monitor to the load balancer
-	loadbalancer.add_health_monitor(type="CONNECT", delay=5, timeout=30)
+	status_monitor = loadbalancer.add_health_monitor(type="CONNECT", delay=5, timeout=30)
 	print "Load balancer health monitor added."
-	# Adding a new error page
+	# Add a new error page
+	# we have to sleep first, otherwise it will be immutable
+	pyrax.utils.wait_until(status_monitor, "status", ['ACTIVE', 'ERROR'], interval=20,
+					attempts=60, verbose=True)
 	loadbalancer.set_error_page(error_page)
 	print "Load balancer error page added."
 
@@ -100,7 +101,7 @@ if __name__ == '__main__':
                 domain = dns.find(name=fqdn_input)
         except exc.NotFound:
                 try:
-                        domain = dns.create(name=fqdn_input, emailAddress="ipadmin@stabletransit.net",
+                        domain = cdns.create(name=fqdn_input, emailAddress="ipadmin@stabletransit.net",
                                 ttl=300, comment=fqdn_input)
                 except exc.DomainCreationFailed as ex:
                         print "!! Domain could not be created:", ex
